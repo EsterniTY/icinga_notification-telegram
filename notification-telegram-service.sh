@@ -48,37 +48,19 @@ done
 [[ -z "${host_display_name}" ]] && host_display_name=$host_name
 [[ -z "${service_display_name}" ]] && service_display_name=$service_name
 
-icon="\xF0\x9F\x9A\xA8"
-title=${type}
-
-case "$(echo "$type" | tr '[:upper:]' '[:lower:]')" in
-    "downtimestart") icon="\xF0\x9F\x95\x92"; title="Обслуживание началось" ;;
-    "downtimeend") icon="\xF0\x9F\x95\x9B"; title="Обслуживание закончилось" ;;
-    "downtimeremoved") icon="\xE2\x9D\x8E"; title="Обслуживание отменено" ;;
-    "acknowledgement") icon="\xF0\x9F\x93\x8C"; title="Проблема подтверждена" ;;
-    "problem") icon="\xE2\x80\xBC"; title="Проблема с сервисом";;
-    "recovery") icon="\xE2\x9C\x85"; title="Сервис восстановился";;
-    "custom") icon="\xF0\x9F\x92\xAC"; title="Сообщение" ;;
-    "flappingstart") icon="\xF0\x9F\x94\x80"; title="Сервис 'шатает'" ;;
-    "flappingend") icon="\xF0\x9F\x94\x84"; title="Сервис перестало 'шатать'";;
-esac
-
 case "$(echo "$service_state" | tr '[:upper:]' '[:lower:]')" in
-    "ok") state_icon="\xE2\x9C\x85"; state="в порядке" ;;
-    "warning") state_icon="\xE2\x9A\xA0"; state="внимание" ;;
-    "critical") state_icon="\xF0\x9F\x9A\xA8"; state="критический" ;;
-    "unknown") state_icon="\xE2\x81\x89"; state="не известно" ;;
-    *) state_icon=""; state=${service_state} ;;
+    "ok") state_icon="\xE2\x9C\x85" ;;
+    "warning") state_icon="\xE2\x9A\xA0" ;;
+    "critical") state_icon="\xF0\x9F\x9A\xA8" ;;
+    "unknown") state_icon="\xE2\x81\x89" ;;
+    *) state_icon="" ;;
 esac
 
 T="$(
-printf "${icon} *%s*\n\n" "${title}"
-printf "*Сервис*: %s\n" "${service_display_name}"
-printf "*Хост*: %s\n" "${host_display_name}"
-printf "*Статус*: ${state_icon} %s\n" "${state}"
-printf "*Дата/время*: %s\n" "${date_time}"
+printf "${state_icon} %s / %s\n" "${host_display_name}" "${service_display_name}"
+# printf "%s\n" "${date_time}"
 [[ "$(echo "$type" | tr '[:upper:]' '[:lower:]')" =~ ^(problem|recovery|custom)$ ]] &&
-    printf "\n%sblock_language\n%s%s\n\n" '```' "${service_output}" '```'
+    printf "\n%s\n%s%s\n\n" '```' "${service_output}" '```'
 [[ -n "${comment}" ]] &&
     printf "*Коментарий от* _%s_:\n%s" "${author}" "$comment"
 )"

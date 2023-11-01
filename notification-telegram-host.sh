@@ -43,34 +43,22 @@ done
 [[ -z "${host_display_name}" ]] && host_display_name=$host_name
 [[ -z "${host_address}" ]] && host_address="N/A"
 
-icon="\xF0\x9F\x9A\xA8"
-title=${type}
-
-case "$(echo "$type" | tr '[:upper:]' '[:lower:]')" in
-    "downtimestart") icon="\xF0\x9F\x95\x92"; title="Обслуживание началось" ;;
-    "downtimeend") icon="\xF0\x9F\x95\x9B"; title="Обслуживание закончилось" ;;
-    "downtimeremoved") icon="\xE2\x9D\x8E"; title="Обслуживание отменено" ;;
-    "acknowledgement") icon="\xF0\x9F\x93\x8C"; title="Проблема подтверждена" ;;
-    "problem") icon="\xE2\x80\xBC"; title="Проблема с хостом";;
-    "recovery") icon="\xE2\x9C\x85"; title="Хост восстановился";;
-    "custom") icon="\xF0\x9F\x92\xAC"; title="Сообщение" ;;
-    "flappingstart") icon="\xF0\x9F\x94\x80"; title="Хост 'шатает'" ;;
-    "flappingend") icon="\xF0\x9F\x94\x84"; title="Хост перестало 'шатать'";;
-esac
-
 case "$(echo "$host_state" | tr '[:upper:]' '[:lower:]')" in
-    "up") state_icon="\xE2\x9C\x85"; state="доступен" ;;
-    "down") state_icon="\xE2\x9D\x8C"; state="не доступен" ;;
-    *) state_icon=""; state=${host_state} ;;
+    "up") state_icon="\xE2\x9C\x85" ;;
+    "down") state_icon="\xE2\x9D\x8C" ;;
+    *) state_icon="" ;;
 esac
+
+if [ "${host_display_name}" != "${host_address}" ]; then
+	host="${host_display_name} (${host_address})"
+else
+	host="${host_display_name}"
+fi
 
 T="$(
-printf "${icon} *%s*\n\n" "${title}"
-printf "*Хост*: %s (%s)\n" "${host_display_name}" "${host_address}"
-printf "*Статус*: ${state_icon} %s\n" "${state}"
-printf "*Дата/время*: %s\n" "${date_time}"
+printf "${state_icon} ${host}\n"
 [[ "$(echo "$type" | tr '[:upper:]' '[:lower:]')" =~ ^(problem|recovery|custom)$ ]] &&
-    printf "\n%sblock_language\n%s%s\n\n" '```' "${host_output}" '```'
+    printf "\n%s\n%s%s\n\n" '```' "${host_output}" '```'
 [[ -n "${comment}" ]] &&
     printf "*Коментарий от* _%s_:\n%s" "${author}" "$comment"
 )"
